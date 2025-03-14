@@ -40,21 +40,19 @@ public class NettyServer {
             future.channel().closeFuture().addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                    log.info("server close channel={}",channelFuture.channel());
                     workerGroup.shutdownGracefully();
                     bossGroup.shutdownGracefully();
+                    log.info("netty server shutdownGracefully successful ");
                 }
             });
 
     }
 
     @PreDestroy
-    public void stopServer() {
-        log.info("server close1 channel={}",future.channel());
-        if (future != null && !future.isDone()) {
-            future.cancel(true);
+    public void stopServer() throws InterruptedException {
+        if (future != null) {
+            future.channel().close().sync();
         }
-//        workerGroup.shutdownGracefully();
-//        bossGroup.shutdownGracefully();
+
     }
 }
