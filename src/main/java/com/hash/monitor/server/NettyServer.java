@@ -8,7 +8,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -41,6 +40,7 @@ public class NettyServer {
             future.channel().closeFuture().addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    log.info("server close channel={}",channelFuture.channel());
                     workerGroup.shutdownGracefully();
                     bossGroup.shutdownGracefully();
                 }
@@ -50,10 +50,11 @@ public class NettyServer {
 
     @PreDestroy
     public void stopServer() {
+        log.info("server close1 channel={}",future.channel());
         if (future != null && !future.isDone()) {
             future.cancel(true);
         }
-        workerGroup.shutdownGracefully();
-        bossGroup.shutdownGracefully();
+//        workerGroup.shutdownGracefully();
+//        bossGroup.shutdownGracefully();
     }
 }
